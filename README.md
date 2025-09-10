@@ -75,6 +75,9 @@ export default function RootLayout({ children }) {
 
 ---
 
+<img width="2849" height="1430" alt="스크린샷 2025-09-10 180433" src="https://github.com/user-attachments/assets/967d2d29-1162-4e67-b4db-bf5ef3853d38" />
+
+
 ## 🚀 Production
 
 `next-dev-pin` is only active when:
