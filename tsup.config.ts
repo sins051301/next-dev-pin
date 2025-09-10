@@ -13,12 +13,15 @@ export default defineConfig([
     },
   },
   {
-    entry: ["src/cli.ts"],
+    entry: {
+      "cli/cli": "src/cli.ts", // dist/cli/cli.js
+      "cli/dev-pin": "templates/scripts/dev-pin.ts", // dist/cli/dev-pin.js
+      "cli/remove-dev-pin": "templates/scripts/remove-dev-pin.ts", // dist/cli/remove-dev-pin.js
+    },
     format: ["cjs"],
     clean: false,
     tsconfig: "tsconfig.build.json",
     outDir: "dist",
-    external: ["fs", "path"],
-    noExternal: [],
+    external: ["fs", "path", "os", "child_process"],
   },
 ]);

@@ -26,40 +26,11 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 // src/cli.ts
 var import_fs = __toESM(require("fs"));
 var import_path = __toESM(require("path"));
-function copyDir(src, dest) {
-  import_fs.default.mkdirSync(dest, { recursive: true });
-  for (const file of import_fs.default.readdirSync(src)) {
-    const srcPath = import_path.default.join(src, file);
-    const destPath = import_path.default.join(dest, file);
-    if (import_fs.default.statSync(srcPath).isDirectory()) {
-      copyDir(srcPath, destPath);
-    } else {
-      if (!import_fs.default.existsSync(destPath)) {
-        import_fs.default.copyFileSync(srcPath, destPath);
-        console.log(`\u2705 ${import_path.default.relative(process.cwd(), destPath)} \uC0DD\uC131\uB428`);
-      } else {
-        console.log(
-          `\u26A0\uFE0F ${import_path.default.relative(process.cwd(), destPath)} \uC774\uBBF8 \uC874\uC7AC, \uAC74\uB108\uB700`
-        );
-      }
-    }
-  }
-}
 function init() {
   const root = process.cwd();
-  const scriptsTemplate = import_path.default.join(__dirname, "../templates/scripts");
-  if (import_fs.default.existsSync(scriptsTemplate)) {
-    const dest = import_path.default.join(root, "scripts");
-    copyDir(scriptsTemplate, dest);
-  } else {
-    console.error(
-      "\u274C templates/scripts \uD3F4\uB354\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4:",
-      scriptsTemplate
-    );
-  }
   const routeTemplate = import_path.default.join(
     __dirname,
-    "../templates/app/api/dev-pin/route.ts"
+    "../../templates/app/api/dev-pin/route.ts"
   );
   const appRoot = import_fs.default.existsSync(import_path.default.join(root, "src/app")) ? import_path.default.join(root, "src/app") : import_path.default.join(root, "app");
   const routeDest = import_path.default.join(appRoot, "api/dev-pin/route.ts");
