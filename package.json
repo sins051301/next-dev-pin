@@ -1,16 +1,16 @@
 {
   "name": "next-dev-pin",
-  "version": "0.1.41",
+  "version": "0.1.52",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "templates/app/**/*"
+    "templates"
   ],
   "bin": {
-    "next-dev-pin": "dist/cli.js"
+    "next-dev-pin": "dist/cli/cli.js"
   },
   "scripts": {
     "build": "tsup",

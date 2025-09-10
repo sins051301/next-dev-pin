@@ -1,15 +1,18 @@
+#!/usr/bin/env node
+
 import fs from "fs";
 import formatWithPrettierAndEslint from "./format";
 import toTargetPath from "./util/to-target-path";
-import path from "path";
 
 async function main() {
-  const inputPath = path.join(process.cwd(), "scripts", "dev-pin-input.json");
+  const inputPath = process.argv[2];
+
   if (!fs.existsSync(inputPath)) {
-    console.error("❌ dev-pin-input.json 없음");
+    console.error("❌ dev-pin-input.json 없음:", inputPath);
     process.exit(1);
   }
 
+  // ✅ 2. JSON 파싱
   const { id, name, description, todos, x, y, relativePath } = JSON.parse(
     fs.readFileSync(inputPath, "utf-8")
   );
@@ -24,9 +27,9 @@ async function main() {
 
   let content = fs.readFileSync(targetFile, "utf-8");
 
-  const hasImport = /import\s*\{\s*DevPin\s*\}\s*from\s+['"]dev-pin['"]/.test(
-    content
-  );
+  // ✅ 3. DevPin import 추가
+  const hasImport =
+    /import\s*\{\s*DevPin\s*\}\s*from\s+['"]next-dev-pin['"]/.test(content);
   if (!hasImport) {
     const importBlockRegex = /(^\s*import[\s\S]*?;\s*\n)/m;
     if (importBlockRegex.test(content)) {
@@ -40,6 +43,7 @@ async function main() {
     console.log("✅ import 추가됨");
   }
 
+  // ✅ 4. DevPin 컴포넌트 삽입
   const componentJSX = `
       {process.env.NEXT_PUBLIC_DEV_PIN_ENV === 'development' && (
         <DevPin
@@ -76,7 +80,6 @@ async function main() {
   }
 
   let newJSX = "";
-
   if (jsxContent.startsWith("<>") && jsxContent.endsWith("</>")) {
     console.log("🔧 이미 Fragment 감싸짐 → 내부 삽입");
     newJSX = jsxContent.replace("</>", `${componentJSX}\n</>`);
@@ -89,7 +92,6 @@ async function main() {
   }
 
   let newContent = content;
-
   if (content.match(returnWithParens)) {
     newContent = content.replace(
       returnWithParens,
@@ -106,7 +108,7 @@ async function main() {
     );
   }
 
-  // ✅ Prettier + ESLint 적용
+  // ✅ 5. Prettier + ESLint 적용
   try {
     const final = await formatWithPrettierAndEslint(targetFile, newContent);
     fs.writeFileSync(targetFile, final, "utf-8");

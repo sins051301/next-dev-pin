@@ -9,7 +9,7 @@ function init() {
   // ✅ app/api/dev-pin/route.ts 복사만 하면 됨
   const routeTemplate = path.join(
     __dirname,
-    "../templates/app/api/dev-pin/route.ts"
+    "../../templates/app/api/dev-pin/route.ts"
   );
 
   // 프로젝트에 src/app이 있으면 그쪽, 없으면 app/ 바로 밑에 생성

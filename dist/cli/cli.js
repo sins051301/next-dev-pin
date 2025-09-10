@@ -30,7 +30,7 @@ function init() {
   const root = process.cwd();
   const routeTemplate = import_path.default.join(
     __dirname,
-    "../templates/app/api/dev-pin/route.ts"
+    "../../templates/app/api/dev-pin/route.ts"
   );
   const appRoot = import_fs.default.existsSync(import_path.default.join(root, "src/app")) ? import_path.default.join(root, "src/app") : import_path.default.join(root, "app");
   const routeDest = import_path.default.join(appRoot, "api/dev-pin/route.ts");
