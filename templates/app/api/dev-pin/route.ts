@@ -1,4 +1,3 @@
-// app/api/dev-pin/route.ts
 import path from "path";
 import { randomUUID } from "crypto";
 import { spawn } from "child_process";
@@ -13,7 +12,9 @@ function runDevPin(command: string, payload: object) {
     let stdout = "";
     let stderr = "";
 
+    // eslint-disable-next-line no-return-assign
     proc.stdout.on("data", (data) => (stdout += data));
+    // eslint-disable-next-line no-return-assign
     proc.stderr.on("data", (data) => (stderr += data));
 
     proc.on("close", (code) => {
@@ -23,7 +24,6 @@ function runDevPin(command: string, payload: object) {
   });
 }
 
-// POST → DevPin 추가
 export async function POST(req: Request) {
   if (process.env.NEXT_PUBLIC_DEV_PIN_ENV === "production") {
     return Response.json(

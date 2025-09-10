@@ -1,6 +1,6 @@
 {
   "name": "next-dev-pin",
-  "version": "0.1.56",
+  "version": "0.1.59",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -8,7 +8,7 @@
   "files": [
     "dist",
     "templates"
-  ],
+  ],  
   "bin": {
     "next-dev-pin": "dist/cli/cli.js"
   },
