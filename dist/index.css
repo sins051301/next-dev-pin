@@ -1,0 +1,335 @@
+/* src/ui/dev-pin-tracker.css */
+.devpin-tracker {
+  position: fixed;
+  z-index: 9999;
+  border: 1px solid #ccc;
+  background: white;
+  padding: 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  color: black;
+}
+.tracker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  cursor: move;
+  gap: 8px;
+}
+.tracker-title {
+  font-weight: bold;
+  user-select: none;
+}
+.tracker-toggle {
+  font-size: 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.tracker-list {
+  max-height: 240px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tracker-item {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 4px;
+}
+.tracker-item:last-child {
+  border-bottom: none;
+}
+.tracker-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.tracker-url {
+  font-size: 10px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tracker-arrow {
+  font-size: 15px;
+  color: #3b82f6;
+}
+.todo-sublist {
+  margin-top: 4px;
+  list-style: disc inside;
+  padding: 0px;
+}
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.todo-item input {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+.todo-item span.checked {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+.todo-item span {
+  font-size: 13px;
+  color: #1f2937;
+}
+
+/* src/ui/safe-dev-form.css */
+.safe-form {
+  display: flex;
+  flex-direction: column;
+}
+.safe-form__actions {
+  margin: 0.5rem 0.5rem 1rem 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+.safe-form__button {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+.safe-form__button--cancel {
+  background-color: #e5e7eb;
+  color: #000;
+}
+.safe-form__button--cancel:hover {
+  background-color: #d1d5db;
+}
+.safe-form__button--submit {
+  background-color: #2563eb;
+  color: white;
+}
+.safe-form__button--submit:hover {
+  background-color: #1d4ed8;
+}
+.safe-form__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* src/ui/dev-pin-global.css */
+.form-container {
+  width: 320px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  color: black;
+}
+.form-header {
+  background: #ddf4ff;
+  padding: 8px;
+  border-radius: 6px 6px 0 0;
+}
+.form-header h2 {
+  font-size: 12px;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0;
+}
+.form-body {
+  padding: 12px;
+  padding-top: 0;
+}
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #374151;
+}
+.form-input {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.todo-section {
+  margin-top: 8px;
+}
+.todo-input-wrapper {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.btn-add {
+  background: #ddf4ff;
+  color: #1d4ed8;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.btn-add:hover {
+  background: #cbe9fb;
+}
+.todo-list {
+  margin-top: 8px;
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 0;
+  list-style: none;
+}
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+.todo-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn-delete {
+  margin-left: 6px;
+  font-size: 11px;
+  color: #dc2626;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.btn-delete:hover {
+  background: #fee2e2;
+}
+.todo-placeholder {
+  font-size: 11px;
+  color: #9ca3af;
+}
+.btn-save {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* src/ui/dev-pin.css */
+.devpin-container {
+  position: absolute;
+  z-index: 9999;
+}
+.devpin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  padding: 4px 8px;
+  background-color: #ddf4ff;
+  border-radius: 4px 4px 0 0;
+  font-size: 12px;
+}
+.devpin-title {
+  font-weight: bold;
+  color: #1f2937;
+}
+.devpin-delete-btn {
+  background-color: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+.devpin-delete-btn:hover {
+  background-color: #dc2626;
+}
+.devpin-delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.devpin-body {
+  width: 240px;
+  padding: 8px;
+  font-size: 12px;
+  border: 1px solid #ddf4ff;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.devpin-section-title {
+  font-weight: bold;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 4px;
+  color: #1f2937;
+}
+.devpin-description {
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+.devpin-todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.devpin-todo-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #1f2937;
+}
+.devpin-todo-item input {
+  cursor: pointer;
+}
+.devpin-todo-item span.checked {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+.devpin-avatar-wrapper {
+  display: inline-flex;
+  align-items: center;
+}
+.devpin-avatar {
+  position: relative;
+  background: black;
+  padding: 4px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.avatar-img {
+  border-radius: 50%;
+}
+.devpin-pointer {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid black;
+}

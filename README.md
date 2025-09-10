@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📌 next-dev-pin
 
-## Getting Started
+A lightweight **Next.js (App Router)** development tool that lets you create and track in-app **todo pins** directly during development.
 
-First, run the development server:
+[![npm version](https://img.shields.io/npm/v/next-dev-pin.svg?style=flat&color=blue)](https://www.npmjs.com/package/next-dev-pin)  
+[![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+---
+
+## ✨ Features
+
+- **Alt + Click** anywhere on the screen to open a todo creation popup.
+- Write down:
+  - **Assignee** (who is responsible)
+  - **Issue description**
+  - **Todo list items**
+- Delete todos anytime with one click.
+- Includes a **page-aware issue tracker** to see all todos grouped by route.
+- ⚡ **Zero cost in production** — components are tree-shaken and removed from your deployed app.
+
+---
+
+## 📦 Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install next-dev-pin
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Initialize once
 
-## Learn More
+Run in your project root:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx next-dev-pin init
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Import styles
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Add this to your `globals.css` or directly in `layout.tsx`:
 
-## Deploy on Vercel
+```ts
+import "next-dev-pin/dist/index.css";
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Wrap your app
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Add the provider in `layout.tsx`:
+
+```tsx
+import { DevPinProvider } from "next-dev-pin";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <DevPinProvider>{children}</DevPinProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+---
+
+## 📋 Usage
+
+- During development, **Alt + Click** anywhere on the screen to create a todo pin.
+- Add assignee, description, and list of todos.
+- Check off or delete todos anytime.
+- Use the floating Issue Tracker panel to view all todos grouped by page/route.
+
+---
+
+## 🚀 Production
+
+`next-dev-pin` is only active when:
+
+```bash
+process.env.NEXT_PUBLIC_DEV_PIN_ENV === "development"
+```
+
+In production, all components are **tree-shaken** and will not affect your bundle size.
