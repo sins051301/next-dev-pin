@@ -1,22 +1,38 @@
 #!/usr/bin/env node
 
 import fs from "fs";
+import getStdin from "get-stdin"; // npm i get-stdin
 import formatWithPrettierAndEslint from "./format";
 import toTargetPath from "./util/to-target-path";
 
 async function main() {
-  const inputPath = process.argv[2];
+  let input: string;
 
-  if (!fs.existsSync(inputPath)) {
-    console.error("❌ dev-pin-input.json 없음:", inputPath);
+  // 1) stdin에서 JSON 읽기
+  try {
+    input = await getStdin();
+  } catch (e) {
+    console.error("❌ stdin 읽기 실패:", e);
     process.exit(1);
   }
 
-  // ✅ 2. JSON 파싱
-  const { id, name, description, todos, x, y, relativePath } = JSON.parse(
-    fs.readFileSync(inputPath, "utf-8")
-  );
+  if (!input) {
+    console.error("❌ 입력(JSON)이 비어 있음");
+    process.exit(1);
+  }
 
+  // 2) JSON 파싱
+  let payload: any;
+  try {
+    payload = JSON.parse(input);
+  } catch (e) {
+    console.error("❌ JSON 파싱 실패:", e);
+    process.exit(1);
+  }
+
+  const { id, name, description, todos, x, y, relativePath } = payload;
+
+  // 3) 대상 파일 확인
   const targetFile = toTargetPath(relativePath);
   console.log("targetFile:", targetFile);
 
@@ -27,7 +43,7 @@ async function main() {
 
   let content = fs.readFileSync(targetFile, "utf-8");
 
-  // ✅ 3. DevPin import 추가
+  // 4) DevPin import 추가
   const hasImport =
     /import\s*\{\s*DevPin\s*\}\s*from\s+['"]next-dev-pin['"]/.test(content);
   if (!hasImport) {
@@ -43,7 +59,7 @@ async function main() {
     console.log("✅ import 추가됨");
   }
 
-  // ✅ 4. DevPin 컴포넌트 삽입
+  // 5) DevPin 컴포넌트 JSX 생성
   const componentJSX = `
       {process.env.NEXT_PUBLIC_DEV_PIN_ENV === 'development' && (
         <DevPin
@@ -57,6 +73,7 @@ async function main() {
       )}
   `;
 
+  // 6) return 문 수정
   const returnWithParens = /return\s*\(([\s\S]*?)\);/m;
   const returnWithoutParens = /return\s*(<[\s\S]*?>);/m;
 
@@ -108,7 +125,7 @@ async function main() {
     );
   }
 
-  // ✅ 5. Prettier + ESLint 적용
+  // 7) Prettier 적용
   try {
     const final = await formatWithPrettierAndEslint(targetFile, newContent);
     fs.writeFileSync(targetFile, final, "utf-8");

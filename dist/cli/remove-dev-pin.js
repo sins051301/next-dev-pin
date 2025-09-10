@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -41,10 +42,13 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 
 // templates/scripts/remove-dev-pin.ts
 var import_fs2 = __toESM(require("fs"));
+var import_get_stdin = __toESM(require("get-stdin"));
 
 // templates/scripts/format.ts
 var import_prettier = __toESM(require("prettier"));
 var import_eslint = require("eslint");
+var prettierConfigCache = /* @__PURE__ */ new Map();
+var eslintInstance = null;
 function ensureBlankLineAfterImports(code) {
   return code.replace(
     /((?:^|\n)(?:import[\s\S]*?from\s+['"][^'"]+['"];?\s*\n)+)(?!\n)/,
@@ -55,14 +59,20 @@ async function formatWithPrettierAndEslint(filePath, code) {
   var _a, _b, _c;
   let out = code;
   try {
-    const config = (_a = await import_prettier.default.resolveConfig(filePath)) != null ? _a : {};
+    let config = prettierConfigCache.get(filePath);
+    if (!config) {
+      config = (_a = await import_prettier.default.resolveConfig(filePath)) != null ? _a : {};
+      prettierConfigCache.set(filePath, config);
+    }
     out = await import_prettier.default.format(out, __spreadProps(__spreadValues({}, config), { filepath: filePath }));
   } catch (e) {
     console.warn("\u26A0\uFE0F Prettier \uD3EC\uB9F7 \uC2E4\uD328, \uADF8\uB300\uB85C \uC9C4\uD589\uD569\uB2C8\uB2E4:", e);
   }
   try {
-    const eslint = new import_eslint.ESLint({ fix: true });
-    const results = await eslint.lintText(out, { filePath });
+    if (!eslintInstance) {
+      eslintInstance = new import_eslint.ESLint({ fix: true });
+    }
+    const results = await eslintInstance.lintText(out, { filePath });
     out = (_c = (_b = results[0]) == null ? void 0 : _b.output) != null ? _c : out;
   } catch (e) {
     console.warn("\u26A0\uFE0F ESLint --fix \uC2E4\uD328, fallback \uC801\uC6A9\uD569\uB2C8\uB2E4:", e);
@@ -160,14 +170,19 @@ function removeImportIfUnused(content) {
   return next.replace(/\r?\n{3,}/g, "\n\n");
 }
 async function main() {
-  const inputPath = process.argv[2];
-  if (!import_fs2.default.existsSync(inputPath)) {
-    console.error("\u274C dev-delete.json \uC5C6\uC74C");
+  const input = await (0, import_get_stdin.default)();
+  if (!input) {
+    console.error("\u274C \uC785\uB825(JSON)\uC774 \uBE44\uC5B4 \uC788\uC74C");
     process.exit(1);
   }
-  const { id, relativePath } = JSON.parse(
-    import_fs2.default.readFileSync(inputPath, "utf-8")
-  );
+  let payload;
+  try {
+    payload = JSON.parse(input);
+  } catch (e) {
+    console.error("\u274C JSON \uD30C\uC2F1 \uC2E4\uD328:", e);
+    process.exit(1);
+  }
+  const { id, relativePath } = payload;
   if (!id || !relativePath) {
     console.error("\u274C \uC785\uB825\uAC12 \uBD80\uC871: id, relativePath\uAC00 \uD544\uC694\uD569\uB2C8\uB2E4.");
     process.exit(1);
@@ -184,9 +199,15 @@ async function main() {
   }
   content = afterRemoval;
   content = removeImportIfUnused(content);
-  const final = await format_default(targetFile, content);
-  import_fs2.default.writeFileSync(targetFile, final, "utf-8");
-  console.log("\u2705 DevPin \uC81C\uAC70 + Prettier \uC644\uB8CC:", targetFile);
+  try {
+    const final = await format_default(targetFile, content);
+    import_fs2.default.writeFileSync(targetFile, final, "utf-8");
+    console.log("\u2705 DevPin \uC81C\uAC70 + Prettier \uC644\uB8CC:", targetFile);
+  } catch (e) {
+    console.warn("\u26A0\uFE0F \uD3EC\uB9F7\uD305 \uC2E4\uD328, \uC6D0\uBCF8 \uC800\uC7A5:", e);
+    import_fs2.default.writeFileSync(targetFile, content, "utf-8");
+    console.log("\u2705 DevPin \uC81C\uAC70 \uC644\uB8CC (\uD3EC\uB9F7\uD305 \uC5C6\uC74C):", targetFile);
+  }
 }
 main().catch((e) => {
   console.error("\u274C \uC5D0\uB7EC:", e);
