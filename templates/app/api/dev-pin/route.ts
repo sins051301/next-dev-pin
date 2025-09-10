@@ -27,7 +27,14 @@ export async function POST(req: Request) {
     console.error("❌ relativePath 없음");
   } else {
     exec(
-      `npx tsx ${path.join(process.cwd(), "scripts", "dev-pin.ts")}`,
+      `npx tsx ${path.join(
+        process.cwd(),
+        "node_modules",
+        "dev-pin",
+        "dist",
+        "cli",
+        "dev-pin.js"
+      )}`,
       (err, stdout, stderr) => {
         if (err) {
           console.error("❌ dev-pin 실행 실패:", err);
@@ -67,7 +74,14 @@ export async function DELETE(req: Request) {
   fs.writeFileSync(filePath, JSON.stringify(payload, null, 2), "utf-8");
 
   exec(
-    `npx tsx ${path.join(process.cwd(), "scripts", "remove-dev-pin.ts")}`,
+    `npx tsx ${path.join(
+      process.cwd(),
+      "node_modules",
+      "dev-pin",
+      "dist",
+      "cli",
+      "remove-dev-pin.js"
+    )}`,
     (err, stdout, stderr) => {
       if (err) {
         console.error("❌ remove-dev-pin 실행 실패:", err);
