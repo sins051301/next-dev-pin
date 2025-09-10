@@ -60,7 +60,7 @@ function removeImportIfUnused(content: string) {
 }
 
 async function main() {
-  const inputPath = path.join(process.cwd(), "scripts", "dev-delete.json");
+  const inputPath = process.argv[2];
   if (!fs.existsSync(inputPath)) {
     console.error("❌ dev-delete.json 없음");
     process.exit(1);

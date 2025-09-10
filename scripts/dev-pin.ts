@@ -1,11 +1,12 @@
 import fs from "fs";
 import formatWithPrettierAndEslint from "./format";
 import toTargetPath from "./util/to-target-path";
+import path from "path";
 
 async function main() {
-  const inputPath = "src/scripts/dev-to-do-input.json";
+  const inputPath = path.join(process.cwd(), "scripts", "dev-pin-input.json");
   if (!fs.existsSync(inputPath)) {
-    console.error("❌ dev-to-do-input.json 없음");
+    console.error("❌ dev-pin-input.json 없음");
     process.exit(1);
   }
 
@@ -23,7 +24,7 @@ async function main() {
 
   let content = fs.readFileSync(targetFile, "utf-8");
 
-  const hasImport = /import\s+DevTodo\s+from\s+['"]@\/ui\/dev-to-do['"]/.test(
+  const hasImport = /import\s*\{\s*DevPin\s*\}\s*from\s+['"]dev-pin['"]/.test(
     content
   );
   if (!hasImport) {
@@ -31,17 +32,17 @@ async function main() {
     if (importBlockRegex.test(content)) {
       content = content.replace(
         importBlockRegex,
-        "$1import DevTodo from '@/ui/dev-to-do';\n"
+        "$1import { DevPin } from 'next-dev-pin';\n"
       );
     } else {
-      content = `import DevTodo from '@/ui/dev-to-do';\n\n${content}`;
+      content = `import { DevPin } from 'next-dev-pin';\n\n${content}`;
     }
     console.log("✅ import 추가됨");
   }
 
   const componentJSX = `
-      {process.env.NEXT_PUBLIC_DEV_TO_DO_ENV === 'development' && (
-        <DevTodo
+      {process.env.NEXT_PUBLIC_DEV_PIN_ENV === 'development' && (
+        <DevPin
           id="${id}"
           name="${name}"
           ${description ? `description="${description}"` : ""}
@@ -52,10 +53,7 @@ async function main() {
       )}
   `;
 
-  // === return 문 잡기 ===
-  // 1) return ( ... );
   const returnWithParens = /return\s*\(([\s\S]*?)\);/m;
-  // 2) return <JSX />;
   const returnWithoutParens = /return\s*(<[\s\S]*?>);/m;
 
   let returnMatch = content.match(returnWithParens);
@@ -80,11 +78,9 @@ async function main() {
   let newJSX = "";
 
   if (jsxContent.startsWith("<>") && jsxContent.endsWith("</>")) {
-    // 이미 Fragment → 내부에 추가
     console.log("🔧 이미 Fragment 감싸짐 → 내부 삽입");
     newJSX = jsxContent.replace("</>", `${componentJSX}\n</>`);
   } else {
-    // Fragment로 감싸고 추가
     console.log("🔧 Fragment로 감싸기 → 삽입");
     newJSX = `<>
       ${jsxContent}
@@ -95,7 +91,6 @@ async function main() {
   let newContent = content;
 
   if (content.match(returnWithParens)) {
-    // return (...) 치환
     newContent = content.replace(
       returnWithParens,
       `return (
@@ -103,7 +98,6 @@ async function main() {
   );`
     );
   } else if (content.match(returnWithoutParens)) {
-    // return <...> 치환
     newContent = content.replace(
       returnWithoutParens,
       `return (
@@ -116,11 +110,11 @@ async function main() {
   try {
     const final = await formatWithPrettierAndEslint(targetFile, newContent);
     fs.writeFileSync(targetFile, final, "utf-8");
-    console.log("✅ DevTodo 삽입 및 포맷팅 완료:", targetFile);
+    console.log("✅ DevPin 삽입 및 포맷팅 완료:", targetFile);
   } catch (e) {
     console.warn("⚠️ 포맷팅 실패, 원본 저장:", e);
     fs.writeFileSync(targetFile, newContent, "utf-8");
-    console.log("✅ DevTodo 삽입 완료 (포맷팅 없음):", targetFile);
+    console.log("✅ DevPin 삽입 완료 (포맷팅 없음):", targetFile);
   }
 }
 
