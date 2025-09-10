@@ -42,10 +42,13 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 
 // templates/scripts/dev-pin.ts
 var import_fs2 = __toESM(require("fs"));
+var import_get_stdin = __toESM(require("get-stdin"));
 
 // templates/scripts/format.ts
 var import_prettier = __toESM(require("prettier"));
 var import_eslint = require("eslint");
+var prettierConfigCache = /* @__PURE__ */ new Map();
+var eslintInstance = null;
 function ensureBlankLineAfterImports(code) {
   return code.replace(
     /((?:^|\n)(?:import[\s\S]*?from\s+['"][^'"]+['"];?\s*\n)+)(?!\n)/,
@@ -56,14 +59,20 @@ async function formatWithPrettierAndEslint(filePath, code) {
   var _a, _b, _c;
   let out = code;
   try {
-    const config = (_a = await import_prettier.default.resolveConfig(filePath)) != null ? _a : {};
+    let config = prettierConfigCache.get(filePath);
+    if (!config) {
+      config = (_a = await import_prettier.default.resolveConfig(filePath)) != null ? _a : {};
+      prettierConfigCache.set(filePath, config);
+    }
     out = await import_prettier.default.format(out, __spreadProps(__spreadValues({}, config), { filepath: filePath }));
   } catch (e) {
     console.warn("\u26A0\uFE0F Prettier \uD3EC\uB9F7 \uC2E4\uD328, \uADF8\uB300\uB85C \uC9C4\uD589\uD569\uB2C8\uB2E4:", e);
   }
   try {
-    const eslint = new import_eslint.ESLint({ fix: true });
-    const results = await eslint.lintText(out, { filePath });
+    if (!eslintInstance) {
+      eslintInstance = new import_eslint.ESLint({ fix: true });
+    }
+    const results = await eslintInstance.lintText(out, { filePath });
     out = (_c = (_b = results[0]) == null ? void 0 : _b.output) != null ? _c : out;
   } catch (e) {
     console.warn("\u26A0\uFE0F ESLint --fix \uC2E4\uD328, fallback \uC801\uC6A9\uD569\uB2C8\uB2E4:", e);
@@ -130,14 +139,25 @@ function toTargetPath(relativePath) {
 
 // templates/scripts/dev-pin.ts
 async function main() {
-  const inputPath = process.argv[2];
-  if (!import_fs2.default.existsSync(inputPath)) {
-    console.error("\u274C dev-pin-input.json \uC5C6\uC74C:", inputPath);
+  let input;
+  try {
+    input = await (0, import_get_stdin.default)();
+  } catch (e) {
+    console.error("\u274C stdin \uC77D\uAE30 \uC2E4\uD328:", e);
     process.exit(1);
   }
-  const { id, name, description, todos, x, y, relativePath } = JSON.parse(
-    import_fs2.default.readFileSync(inputPath, "utf-8")
-  );
+  if (!input) {
+    console.error("\u274C \uC785\uB825(JSON)\uC774 \uBE44\uC5B4 \uC788\uC74C");
+    process.exit(1);
+  }
+  let payload;
+  try {
+    payload = JSON.parse(input);
+  } catch (e) {
+    console.error("\u274C JSON \uD30C\uC2F1 \uC2E4\uD328:", e);
+    process.exit(1);
+  }
+  const { id, name, description, todos, x, y, relativePath } = payload;
   const targetFile = toTargetPath(relativePath);
   console.log("targetFile:", targetFile);
   if (!import_fs2.default.existsSync(targetFile)) {

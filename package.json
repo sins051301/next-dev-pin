@@ -1,6 +1,6 @@
 {
   "name": "next-dev-pin",
-  "version": "0.1.52",
+  "version": "0.1.56",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -32,5 +32,8 @@
     "prettier": "^3.6.2",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "get-stdin": "^9.0.0"
   }
 }
