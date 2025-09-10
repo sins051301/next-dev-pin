@@ -1,7 +1,9 @@
+#!/usr/bin/env node
+
 import fs from "fs";
+import getStdin from "get-stdin"; // npm i get-stdin
 import formatWithPrettierAndEslint from "./format";
 import toTargetPath from "./util/to-target-path";
-import path from "path";
 
 function escapeRegExp(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -22,7 +24,7 @@ function removeDevPinBlocksById(content: string, todoId: string) {
     "gm"
   );
 
-  // ✅ 혹시 조건부 wrapper 없이 바로 <DevPin .../> 가 삽입된 경우도 방어
+  // ✅ 혹시 조건부 wrapper 없이 바로 <DevPin .../> 가 삽입된 경우 방어
   const reSelfClosing = new RegExp(
     String.raw`<DevPin\b[^>]*\bid\s*=\s*["'\`]${idEsc}["'\`][^>]*?\/>\s*`,
     "gm"
@@ -60,18 +62,22 @@ function removeImportIfUnused(content: string) {
 }
 
 async function main() {
-  const inputPath = process.argv[2];
-  if (!fs.existsSync(inputPath)) {
-    console.error("❌ dev-delete.json 없음");
+  // ✅ stdin에서 JSON 받기
+  const input = await getStdin();
+  if (!input) {
+    console.error("❌ 입력(JSON)이 비어 있음");
     process.exit(1);
   }
 
-  const { id, relativePath } = JSON.parse(
-    fs.readFileSync(inputPath, "utf-8")
-  ) as {
-    id: string;
-    relativePath: string;
-  };
+  let payload: { id: string; relativePath: string };
+  try {
+    payload = JSON.parse(input);
+  } catch (e) {
+    console.error("❌ JSON 파싱 실패:", e);
+    process.exit(1);
+  }
+
+  const { id, relativePath } = payload;
 
   if (!id || !relativePath) {
     console.error("❌ 입력값 부족: id, relativePath가 필요합니다.");
@@ -98,10 +104,15 @@ async function main() {
   content = removeImportIfUnused(content);
 
   // 3) Prettier → ESLint --fix
-  const final = await formatWithPrettierAndEslint(targetFile, content);
-  fs.writeFileSync(targetFile, final, "utf-8");
-
-  console.log("✅ DevPin 제거 + Prettier 완료:", targetFile);
+  try {
+    const final = await formatWithPrettierAndEslint(targetFile, content);
+    fs.writeFileSync(targetFile, final, "utf-8");
+    console.log("✅ DevPin 제거 + Prettier 완료:", targetFile);
+  } catch (e) {
+    console.warn("⚠️ 포맷팅 실패, 원본 저장:", e);
+    fs.writeFileSync(targetFile, content, "utf-8");
+    console.log("✅ DevPin 제거 완료 (포맷팅 없음):", targetFile);
+  }
 }
 
 main().catch((e) => {
